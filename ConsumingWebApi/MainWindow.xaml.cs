@@ -1,8 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
+using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
+using System.Web.Script.Serialization;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -23,6 +26,21 @@ namespace ConsumingWebApi
         public MainWindow()
         {
             InitializeComponent();
+        }
+
+        private async void Get_Click(object sender, RoutedEventArgs e)
+        {
+            using (HttpClient client = new HttpClient())
+            {
+                client.BaseAddress = new Uri("http://localhost:15489/api/clientes");
+                var resposta = await client.GetAsync("");
+
+                string dados = await resposta.Content.ReadAsStringAsync();
+
+                ObservableCollection<Clientes> clientes = new JavaScriptSerializer().Deserialize<ObservableCollection<Clientes>>(dados);
+
+                clienteDgv.ItemsSource = clientes;
+            }
         }
     }
 }
